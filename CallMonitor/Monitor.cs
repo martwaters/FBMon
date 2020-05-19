@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace CallMonitor
 {
+    /// <summary>
+    /// class monitors fritzbox phone events
+    /// </summary>
     public class Monitor
     {
         static Logger Log = LogManager.GetCurrentClassLogger();
@@ -19,6 +22,10 @@ namespace CallMonitor
         public event EventHandler<RingEventArgs> Ringed;
         public event EventHandler<DisconnectEventArgs> Disconnected;
 
+        /// <summary>
+        /// Runs the specified fritz box detection loop.
+        /// </summary>
+        /// <param name="fritzBox">The fritz box.</param>
         public void Run(string fritzBox)
         {
             Log.Debug("Run FritzBoxCallMonitor on {0}", fritzBox);
