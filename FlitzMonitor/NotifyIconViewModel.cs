@@ -1,9 +1,14 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace FlitzMonitor
 {
@@ -12,8 +17,43 @@ namespace FlitzMonitor
     /// view model is assigned to the NotifyIcon in XAML. Alternatively, the startup routing
     /// in App.xaml.cs could have created this view model, and assigned it to the NotifyIcon.
     /// </summary>
-    public class NotifyIconViewModel
+    public class NotifyIconViewModel : INotifyPropertyChanged
     {
+        #region Property Changed
+
+        /// <summary>
+        /// Fired when a project property has changed.
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+
+        /// <summary>
+        /// Notify that a property has changed
+        /// </summary>
+        /// <param name="propertyName"></param>
+        protected virtual void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        
+        /// <summary>
+        /// Set field value
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="field">The field</param>
+        /// <param name="value">The value</param>
+        /// <param name="propertyName">The name of the property</param>
+        /// <returns>If set was successful</returns>
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            field = value;
+            //if (!IsDirty)
+            //{
+            //    if (!propertyName.Equals(nameof(IsDirty))) IsDirty = true;
+            //}
+            OnPropertyChanged(propertyName);
+            return true;
+        }
+
+        #endregion // Property Changed
 
         CallMonitor.Monitor FritzMon;
 
@@ -25,46 +65,63 @@ namespace FlitzMonitor
             FritzMon.Ringed += Fritz_Ringed;
             FritzMon.Disconnected += Fritz_Disconnected;
 
-            FritzMon.Run("192.168.178.1");
+            FritzMon.Run(Properties.Settings.Default.FritzAddress);
         }
 
-        private void Bubble(string what, string details)
-        {
-            TaskbarIcon tbIcon = ((App)Application.Current).GetIcon();
+        public ObservableCollection<FBEventItem> BoxEvents { get => boxEvents; set => SetField(ref boxEvents, value); }
+        private ObservableCollection<FBEventItem> boxEvents = new ObservableCollection<FBEventItem>();
 
+        private void Bubble(string id, DateTime timeStamp, string what, string details)
+        {
+            object fest = new object();
+            lock (fest)
+            {
+
+                // store the event for the monitor list
+                FBEventItem fbEvent = new FBEventItem()
+                {
+                    TimeStamp = timeStamp,
+                    Category = what,
+                    Text = details,
+                    Id = id
+                };
+
+                // prevent threading crash ...
+                Application.Current.Dispatcher.Invoke((Action)delegate {
+                    Update(fbEvent);
+                });
+            }
+        }
+        private void Update(FBEventItem fbEvent)
+        {
+            BoxEvents.Add(fbEvent);
             FlitzBalloon balloon = new FlitzBalloon();
-            balloon.BalloonText(what);
-            balloon.ShowText(details);
-            ((App)Application.Current).CallEvents.Add(what + " - " + details);
+            balloon.BalloonText(fbEvent.Category);
+            balloon.ShowText(fbEvent.Text);
 
             //show and close after 2.5 seconds
+            TaskbarIcon tbIcon = ((App)Application.Current).GetIcon();
             tbIcon.ShowCustomBalloon(balloon, PopupAnimation.Slide, 5000);
-
-            //Thread th = new Thread(() =>
-            //{
-            //    tbIcon.ShowCustomBalloon(balloon, PopupAnimation.Slide, 5000); 
-            //});
-            //th.SetApartmentState(ApartmentState.STA);
-            //th.Start();
         }
+
         private void Fritz_Disconnected(object sender, CallMonitor.DisconnectEventArgs e)
         {
-            Bubble("DISCONNECT", string.Format($"{e.TimeStamp}:{e.ConnectionId} after {e.DurationSeconds} [s]"));
+            Bubble( e.ConnectionId, e.TimeStamp, "Ende", string.Format($"nach {e.DurationSeconds} [s]"));
         }
 
         private void Fritz_Ringed(object sender, CallMonitor.RingEventArgs e)
         {
-            Bubble("RING", string.Format($"{e.TimeStamp}:{e.ConnectionId} - '{e.RemoteNumber}' to '{e.LocalNumber}'"));
+            Bubble(e.ConnectionId, e.TimeStamp, "->Eingehend", string.Format($"von '{e.RemoteNumber}' an '{e.LocalNumber}'"));
         }
 
         private void Fritz_Connected(object sender, CallMonitor.ConnectEventArgs e)
         {
-            Bubble("CONNECT", string.Format($"{e.TimeStamp}:{e.ConnectionId} - '{e.LocalExtension}' to '{e.RemoteNumber}'"));
+            Bubble(e.ConnectionId, e.TimeStamp, "Verbindung", string.Format($"'{e.LocalExtension}' mit '{e.RemoteNumber}'"));
         }
 
         private void Fritz_Called(object sender, CallMonitor.CallEventArgs e)
         {
-            Bubble("CALL", string.Format($"{e.TimeStamp}:{e.ConnectionId} to '{e.LocalExtension}','{e.LocalNumber}' from '{e.RemoteNumber}'"));
+            Bubble(e.ConnectionId, e.TimeStamp, "Ausgehend->", string.Format($"von '{e.LocalExtension}','{e.LocalNumber}' an '{e.RemoteNumber}'"));
         }
 
         /// <summary>
@@ -100,7 +157,6 @@ namespace FlitzMonitor
                 };
             }
         }
-
 
         /// <summary>
         /// Shuts down the application.

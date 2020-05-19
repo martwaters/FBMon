@@ -8,9 +8,8 @@ using System.Threading.Tasks;
 
 namespace FlitzMonitor
 {
-    public class FlitzBalloonViewModel  : INotifyPropertyChanged
+    public class FBEventItem : INotifyPropertyChanged
     {
-
         #region Property Changed
 
         /// <summary>
@@ -53,11 +52,16 @@ namespace FlitzMonitor
 
         #endregion // Property Changed
 
-        public string ShowText { get => showText; set => SetField(ref showText, value); }
-        private string showText;
+        public DateTime TimeStamp { get => timeStamp; set => SetField(ref timeStamp, value); }
+        private DateTime timeStamp;
 
+        public string Category { get => category; set => SetField(ref category, value); }
+        private string category;
 
-        public string BalloonText { get => balloonText; set => SetField(ref balloonText, value); }
-        private string balloonText;
+        public string Id { get => id; set => SetField(ref id, value); }
+        private string id;
+
+        public string Text { get => text; set => SetField(ref text, value); }
+        private string text;
     }
 }
