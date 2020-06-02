@@ -29,22 +29,34 @@ namespace FlitzMonitor
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            //Thread th = Thread.CurrentThread;
-            //th.SetApartmentState(ApartmentState.STA);
-
             base.OnStartup(e);
-
+            this.DispatcherUnhandledException += DispatchUnhandledException;
             log = LogManager.GetLogger("Monitor");
 
             log.Info("########### User {0} starting {1} ###########", Environment.UserName, AppDomain.CurrentDomain.FriendlyName);
 
-            //create the notifyicon (it's a resource declared in NotifyIconResources.xaml
-            notifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
+            try
+            {
+                //create the notifyicon (it's a resource declared in NotifyIconResources.xaml
+                notifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
+            }
+            catch(Exception ex)
+            {
+                log.Error($"Shutdown with issue: {Tools.GetInnerMostMessage(ex)}");
+                this.Shutdown();
+            }
+        }
+
+        private void DispatchUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            log.Error($"Exit with unhandled issue: {e.Exception.Message}");
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
-            notifyIcon.Dispose(); //the icon would clean up automatically, but this is cleaner
+            log.Info($"Closing {AppDomain.CurrentDomain.FriendlyName}");
+            if(notifyIcon != null)
+                notifyIcon.Dispose(); //the icon would clean up automatically, but this is cleaner
             base.OnExit(e);
         }
     }

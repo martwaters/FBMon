@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlitzMonitor", "FlitzMonito
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallMonitor", "CallMonitor\CallMonitor.csproj", "{9DA1A057-5BBD-4B4E-9330-74840BDB1D76}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fritz", "Fritz\Fritz.csproj", "{0E745728-7799-45AB-ACFE-BE108DD8415C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Number2Name", "Number2Name\Number2Name.csproj", "{48520A1F-1F9A-427C-82D7-75B8581583ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +33,14 @@ Global
 		{9DA1A057-5BBD-4B4E-9330-74840BDB1D76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DA1A057-5BBD-4B4E-9330-74840BDB1D76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DA1A057-5BBD-4B4E-9330-74840BDB1D76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E745728-7799-45AB-ACFE-BE108DD8415C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E745728-7799-45AB-ACFE-BE108DD8415C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E745728-7799-45AB-ACFE-BE108DD8415C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E745728-7799-45AB-ACFE-BE108DD8415C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48520A1F-1F9A-427C-82D7-75B8581583ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48520A1F-1F9A-427C-82D7-75B8581583ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48520A1F-1F9A-427C-82D7-75B8581583ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48520A1F-1F9A-427C-82D7-75B8581583ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

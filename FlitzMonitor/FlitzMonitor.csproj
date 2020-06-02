@@ -67,6 +67,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Tools.cs" />
     <Page Include="FlitzBalloon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -129,6 +130,10 @@
     <ProjectReference Include="..\NotifyIconWpf\NotifyIconWpf.csproj">
       <Project>{7ac63864-7638-41c4-969c-d3197ef2bed9}</Project>
       <Name>NotifyIconWpf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Number2Name\Number2Name.csproj">
+      <Project>{48520A1F-1F9A-427C-82D7-75B8581583ED}</Project>
+      <Name>Number2Name</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

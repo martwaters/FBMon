@@ -48,7 +48,7 @@ namespace CallMonitor
 
         private void tcpClient_DataReceived(EventDrivenTcpClient sender, object data)
         {
-            Log.Debug("Message received: {0}", data);
+            Log.Trace("Message received: {0}", data);
 
             //Outgoing call:             Date;CALL;ConnectionID;LocalExtension;LocalNumber;RemoteNumber;
             //Incoming call:             Date;RING;ConnectionID;RemoteNumber;LocalNumber;

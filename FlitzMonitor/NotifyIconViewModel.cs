@@ -1,8 +1,11 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
+using NLog;
+using Number2Name;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
@@ -55,10 +58,18 @@ namespace FlitzMonitor
 
         #endregion // Property Changed
 
+        static Logger Log = LogManager.GetCurrentClassLogger();
         CallMonitor.Monitor FritzMon;
+        CallerNames Names;
 
         public NotifyIconViewModel()
         {
+            string[] args = Environment.GetCommandLineArgs();
+            if (args.Length < 3)
+            {
+                throw new Exception("Flitz Id args required!");
+            }
+            Names = new CallerNames(args[1], args[2]);
             FritzMon = new CallMonitor.Monitor();
             FritzMon.Called += Fritz_Called;
             FritzMon.Connected += Fritz_Connected;
@@ -76,6 +87,7 @@ namespace FlitzMonitor
             object fest = new object();
             lock (fest)
             {
+                Log.Info($"({id}) {what}: {details}");
 
                 // store the event for the monitor list
                 FBEventItem fbEvent = new FBEventItem()
@@ -111,17 +123,17 @@ namespace FlitzMonitor
 
         private void Fritz_Ringed(object sender, CallMonitor.RingEventArgs e)
         {
-            Bubble(e.ConnectionId, e.TimeStamp, "->Eingehend", string.Format($"von '{e.RemoteNumber}' an '{e.LocalNumber}'"));
+            Bubble(e.ConnectionId, e.TimeStamp, "->Eingehend", string.Format($"von '{Names.Resolve(e.RemoteNumber)}' an '{e.LocalNumber}'"));
         }
 
         private void Fritz_Connected(object sender, CallMonitor.ConnectEventArgs e)
         {
-            Bubble(e.ConnectionId, e.TimeStamp, "Verbindung", string.Format($"'{e.LocalExtension}' mit '{e.RemoteNumber}'"));
+            Bubble(e.ConnectionId, e.TimeStamp, "Verbindung", string.Format($"'{Names.GetInternal(e.LocalExtension)}' mit '{Names.Resolve(e.RemoteNumber)}'"));
         }
 
         private void Fritz_Called(object sender, CallMonitor.CallEventArgs e)
         {
-            Bubble(e.ConnectionId, e.TimeStamp, "Ausgehend->", string.Format($"von '{e.LocalExtension}','{e.LocalNumber}' an '{e.RemoteNumber}'"));
+            Bubble(e.ConnectionId, e.TimeStamp, "Ausgehend->", string.Format($"von '{Names.GetInternal(e.LocalExtension)}','{e.LocalNumber}' an '{Names.Resolve(e.RemoteNumber)}'"));
         }
 
         /// <summary>
