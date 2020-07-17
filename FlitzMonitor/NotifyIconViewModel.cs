@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -62,6 +63,31 @@ namespace FlitzMonitor
         CallMonitor.Monitor FritzMon;
         CallerNames Names;
 
+        public TextBox InfoItem { get => infoItem; set => SetField(ref infoItem, value); }
+        private TextBox infoItem = new TextBox()
+        {
+            TextAlignment = TextAlignment.Center,
+            IsReadOnly = true,
+            BorderThickness = new Thickness(2.0),
+            Background = Brushes.LightGreen,
+            BorderBrush = Brushes.Gray,
+        };
+        private string InfoItemText
+        {
+            get
+            {
+                int connects = 0;
+                foreach(FBEventItem item in BoxEvents)
+                {
+                    if("Verbindung".Equals(item.Category))
+                    {
+                        connects++;
+                    }
+                }
+                return string.Format($"FlitzMonitor [{connects} call(s)]\r\ndouble-click for list\r\nright-click for menu");
+            }
+        }
+
         public NotifyIconViewModel()
         {
             string[] args = Environment.GetCommandLineArgs();
@@ -77,6 +103,8 @@ namespace FlitzMonitor
             FritzMon.Disconnected += Fritz_Disconnected;
 
             FritzMon.Run(Properties.Settings.Default.FritzAddress);
+
+            InfoItem.Text = InfoItemText;
         }
 
         public ObservableCollection<FBEventItem> BoxEvents { get => boxEvents; set => SetField(ref boxEvents, value); }
@@ -107,6 +135,10 @@ namespace FlitzMonitor
         private void Update(FBEventItem fbEvent)
         {
             BoxEvents.Add(fbEvent);
+
+            // update tooltip
+            InfoItem.Text = InfoItemText;
+
             FlitzBalloon balloon = new FlitzBalloon();
             balloon.BalloonText(fbEvent.Category);
             balloon.ShowText(fbEvent.Text);
@@ -118,7 +150,21 @@ namespace FlitzMonitor
 
         private void Fritz_Disconnected(object sender, CallMonitor.DisconnectEventArgs e)
         {
-            Bubble( e.ConnectionId, e.TimeStamp, "Ende", string.Format($"nach {e.DurationSeconds} [s]"));
+            Bubble(e.ConnectionId, e.TimeStamp, "Ende", FormatDuration(e.DurationSeconds));
+        }
+
+        private static string FormatDuration(int seconds)
+        {
+            if (seconds <= 90)
+                return string.Format($"nach {seconds} [s]");
+            else
+            {
+                TimeSpan ts = new TimeSpan(0, 0, seconds);
+                if (seconds >= 3600)
+                    return string.Format("nach {0} [h]", ts.ToString(@"hh\:mm\:ss"));
+                else
+                    return string.Format("nach {0} [min]", ts.ToString(@"mm\:ss"));
+            }
         }
 
         private void Fritz_Ringed(object sender, CallMonitor.RingEventArgs e)

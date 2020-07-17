@@ -19,7 +19,7 @@
     <!-- the application's NotifyIcon - started from App.xaml.cs. Declares its own view model. -->
     <tb:TaskbarIcon x:Key="NotifyIcon"
                     IconSource="green.ico"
-                    ToolTipText="Double-click for window, right-click for menu"
+                    TrayToolTip="{Binding InfoItem}"
                     DoubleClickCommand="{Binding ShowWindowCommand}"
                     ContextMenu="{StaticResource SysTrayMenu}">
 
@@ -28,5 +28,6 @@
             <local:NotifyIconViewModel />
         </tb:TaskbarIcon.DataContext>
     </tb:TaskbarIcon>
+    <!--ToolTipText="Double-click for window, right-click for menu"-->
 
 </ResourceDictionary>

@@ -15,6 +15,13 @@ namespace FlitzMonitor
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
+    /// <remarks>
+    /// Wie Programm zu Autostart hinzufügen?
+    /// Drücken Sie gleichzeitig auf die Tasten [Windows] und [R], 
+    /// sodass sich das Fenster "Ausführen" öffnet. 
+    /// Geben Sie hier "shell:startup" und bestätigen Sie mit "OK". Anschließend öffnet sich der Autostart-Ordner. 
+    /// Fügen Sie hier alle Programme und Dateien ein, die Sie automatisch mit Windows starten wollen.
+    /// </remarks>
     public partial class App : Application
     {
         public TaskbarIcon GetIcon()
