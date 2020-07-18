@@ -20,12 +20,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-The program includes the following packages, please refer to their individual licende conditions:
+The program includes the following packages, please refer to their individual license conditions:
 
 NLog: https://github.com/NLog/NLog/blob/master/LICENSE.txt
 
 EventDrivenTcpClient: http://www.daniweb.com/software-development/csharp/code/422291/user-friendly-asynchronous-event-driven-tcp-client
 
-NotifyIcon for WPF: Philipp Sumi,  http://www.hardcodet.net
+NotifyIcon for WPF: http://www.hardcodet.net
 
 Fritz NuGet package: https://github.com/chstorb/Fritz/blob/master/LICENSE.txt
