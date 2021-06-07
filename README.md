@@ -22,7 +22,8 @@ Geschrieben und im Einsatz auf einer **Fritzbox 7490**.
 Um diese Daten aus dem Sourcecode herauszuhalten, werden Fritzbox Zugangsdaten über die Kommandozeile übergeben.
 Aufruf: 
 
-FlitzMonitor.exe {Fritzbox-Admin} {Fritzbox-Admin-Passwort}
+FlitzMonitor.exe {Fritzbox-User} {Fritzbox-User-Passwort}
 
 wobei natürlich die {} hier weggelassen werden und die beiden Parameter in "" gesetzt werden, wenn dort Leerzeichen enthalten sind.
 Die Fritzbox-IP sollte in FlitzMonitor.exe.config unter "FritzAddress" eingetragen werden.
+Eventuell ist es hilfreich, für das Programm einen extra Fritzbox-User anzulegen.
