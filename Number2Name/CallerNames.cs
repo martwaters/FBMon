@@ -12,8 +12,8 @@ namespace Number2Name
     public class CallerNames
     {
         static Logger Log = LogManager.GetCurrentClassLogger();
-        Dictionary<string, string> KnownNumbers;
-        Dictionary<string, string> Internals { get; set; }
+        public Dictionary<string, string> KnownNumbers { get; private set; }
+        public Dictionary<string, string> Internals { get; private set; }
 
         public CallerNames(string userName, string password)
         {
@@ -59,39 +59,76 @@ namespace Number2Name
 
             FritzClient _fb = new FritzClient { UserName = userName, Password = password };
 
-            phonebooksPhonebook phonebook = _fb.GetPhonebook("Telefonbuch");
-            foreach (phonebooksPhonebookContact contact in phonebook.contact)
+            List<string> booknames = _fb.GetPhonebookNames();
+            if(booknames == null || booknames.Count == 0)
             {
-                Log.Debug($"{contact.uniqueid}\t{contact.person[0].realName}\t{contact.telephony[0].number[0].Value}");
-
-                foreach (phonebooksPhonebookContactTelephony phone in contact.telephony)
+                Log.Error("No phonebook(s) retrieved!");
+                return book;
+            }
+            foreach(string name in booknames)
+            {
+                //phonebooksPhonebook phonebook = _fb.GetPhonebook("Telefonbuch");
+                phonebooksPhonebook phonebook = _fb.GetPhonebook(name);
+                if(phonebook == null || phonebook.contact == null || phonebook.contact.Length == 0)
                 {
-                    foreach(phonebooksPhonebookContactTelephonyNumber number in phone.number)
+                    Log.Info("Phonebook {0} is empty", name);
+                    continue;
+                }
+                foreach (phonebooksPhonebookContact contact in phonebook.contact)
+                {
+                    Log.Debug($"{contact.uniqueid}\t{contact.person[0].realName}\t{contact.telephony[0].number[0].Value}");
+
+                    foreach (phonebooksPhonebookContactTelephony phone in contact.telephony)
                     {
-                        string dial = Align(number.Value);
-                        if(!string.IsNullOrEmpty(dial)
-                            && !book.ContainsKey(dial))
+                        foreach (phonebooksPhonebookContactTelephonyNumber number in phone.number)
                         {
-                            Log.Trace($"\t->{dial}");
-                            book.Add(dial, contact.person[0].realName);
-                        }
-                        if(dial.StartsWith("**6"))
-                        {
-                            string homephone = dial.Substring(3);
-                            if(!Internals.ContainsKey(homephone))
+                            string dial = Align(number.Value);
+                            if (!string.IsNullOrEmpty(dial)
+                                && !book.ContainsKey(dial))
                             {
-                                Log.Trace($"\t(internal)->{homephone}");
-                                Internals.Add(homephone, contact.person[0].realName);
+                                Log.Trace($"\t->{dial}");
+                                book.Add(dial, contact.person[0].realName);
+                            }
+                            else
+                            {
+                                Log.Trace($"\t(ignored)");
+                                continue;
+                            }
+
+                            if (dial.StartsWith("**6"))
+                            {
+                                string homephone = dial.Substring(3);
+                                if (!Internals.ContainsKey(homephone))
+                                {
+                                    Log.Trace($"\t(internal)->{homephone}");
+                                    Internals.Add(homephone, contact.person[0].realName);
+                                }
+                            }
+                            else if (dial.StartsWith("**"))
+                            {
+                                string special = dial.Substring(3);
+                                if (!string.IsNullOrEmpty(special) && !string.IsNullOrEmpty(contact.person[0].realName))
+                                {
+                                    if (!Internals.ContainsKey(special))
+                                    {
+                                        Log.Trace($"\t(special)->{special}");
+                                        Internals.Add(special, contact.person[0].realName);
+                                    }
+                                }
                             }
 
                         }
-
                     }
                 }
             }
             return book;
         }
 
+        /// <summary>
+        /// Nummern vereinfachen und vergleichbar machen
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
         private string Align(string number)
         {
             if (string.IsNullOrEmpty(number))
