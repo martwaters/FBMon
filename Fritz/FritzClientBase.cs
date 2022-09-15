@@ -3,6 +3,7 @@ using Fritz.Extensions;
 using System;
 using System.Net;
 using Fritz.Serialization;
+using System.Collections.Generic;
 
 namespace Fritz
 {
@@ -120,6 +121,19 @@ namespace Fritz
             var service = new Contact(Url);
             service.SoapHttpClientProtocol.Credentials = new NetworkCredential(userName: UserName, password: Password);
             return service.GetPhonebook(name);
+        }
+
+        public List<string> GetPhonebookNames()
+        {
+            var service = new Contact(Url);
+            service.SoapHttpClientProtocol.Credentials = new NetworkCredential(userName: UserName, password: Password);
+            IEnumerable<Tuple<ushort, string, string, string>> books = service.GetPhonebookList();
+            List<string> names = new List<string>();
+            foreach(var book in books)
+            {
+                names.Add(book.Item2);
+            }
+            return names;
         }
 
         #endregion
