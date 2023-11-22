@@ -74,6 +74,7 @@ namespace Number2Name
                     Log.Info("Phonebook {0} is empty", name);
                     continue;
                 }
+                Log.Debug("Phonebook: {0}", name);
                 foreach (phonebooksPhonebookContact contact in phonebook.contact)
                 {
                     Log.Debug($"{contact.uniqueid}\t{contact.person[0].realName}\t{contact.telephony[0].number[0].Value}");
@@ -83,6 +84,7 @@ namespace Number2Name
                         foreach (phonebooksPhonebookContactTelephonyNumber number in phone.number)
                         {
                             string dial = Align(number.Value);
+
                             if (!string.IsNullOrEmpty(dial)
                                 && !book.ContainsKey(dial))
                             {
