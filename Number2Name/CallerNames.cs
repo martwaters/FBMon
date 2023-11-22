@@ -39,6 +39,12 @@ namespace Number2Name
             return remoteNumber;
         }
 
+        /// <summary>
+        /// Returns the internal instrument associated with internNumber
+        /// </summary>
+        /// <remarks>Not clear when / why / from where '40' appears as redirection to answer machine</remarks>
+        /// <param name="internNumber"></param>
+        /// <returns></returns>
         public string GetInternal(string internNumber)
         {
             if (Internals.ContainsKey(internNumber))
