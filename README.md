@@ -29,4 +29,4 @@ Die Fritzbox-IP sollte in FlitzMonitor.exe.config unter "FritzAddress" eingetrag
 Eventuell ist es hilfreich, für das Programm einen extra Fritzbox-User anzulegen.
 
 Nachdem das Programm auf meiner neuen Fritzbox 7590 zunächst nicht laufen wollte, musste ich lernen, 
-dass man zunächst den Callmonitor mit Anwahl von ** #96*5* ** aktivieren muss!
+dass man zunächst den Callmonitor mit Anwahl von ** \#96\*5\* ** aktivieren muss!
