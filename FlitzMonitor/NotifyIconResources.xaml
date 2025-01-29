@@ -3,6 +3,8 @@
                     xmlns:tb="http://www.hardcodet.net/taskbar"
                     xmlns:local="clr-namespace:FlitzMonitor">
 
+    <!--xmlns:tb="http://www.hardcodet.net/taskbar"-->
+
     <!-- The taskbar context menu - the first row is a dummy to show off simple data binding -->
     <!--
         The "shared" directive is needed if we reopen the sample window a few times - WPF will otherwise
